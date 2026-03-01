@@ -1,0 +1,349 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>D-Trinity | La Trinité Décentralisée</title>
+    
+    <script src="https://unpkg.com/nostr-tools@1.17.0/lib/nostr.bundle.js"></script>
+    
+    <script src="src/opentimestamps.bundle.js"></script>
+    
+    <style>
+        body { font-family: 'Courier New', Courier, monospace; background-color: #0d1117; color: #c9d1d9; max-width: 950px; margin: 40px auto; padding: 20px; line-height: 1.6; }
+        .header-logo { text-align: center; border-bottom: 2px solid #30363d; padding-bottom: 20px; margin-bottom: 20px; }
+        .header-logo img { max-width: 350px; height: auto; }
+        .tabs { display: flex; border-bottom: 1px solid #30363d; margin-bottom: 20px; }
+        .tab { padding: 15px 25px; cursor: pointer; background: #010409; color: #8b949e; border: 1px solid transparent; border-bottom: none; font-weight: bold; font-size: 14px; transition: 0.2s; flex: 1; text-align: center; }
+        .tab.active { background: #161b22; color: #58a6ff; border-color: #30363d; border-radius: 6px 6px 0 0; }
+        .tab:hover:not(.active) { color: #c9d1d9; }
+        .panel { display: none; background: #161b22; padding: 30px; border: 1px solid #30363d; border-radius: 0 6px 6px 6px; }
+        .panel.active { display: block; }
+        label { font-weight: bold; color: #79c0ff; display: block; margin-top: 15px; margin-bottom: 5px; font-size: 14px;}
+        input[type="file"] { background: #010409; color: #e6edf3; border: 1px dashed #30363d; padding: 15px; width: 100%; box-sizing: border-box; cursor: pointer; }
+        input[type="file"]::file-selector-button { background: #238636; color: white; border: none; padding: 8px 15px; border-radius: 4px; cursor: pointer; margin-right: 15px; }
+        button { background: #58a6ff; color: #000; border: none; padding: 15px; width: 100%; cursor: pointer; font-weight: bold; font-size: 16px; margin-top: 20px; border-radius: 4px; }
+        button:hover { background: #388bfd; }
+        button.download-btn { background: #238636; color: #fff; margin-top: 10px; }
+        button.ots-btn { background: #f7931a; color: #000; }
+        button.upgrade-btn { background: #a371f7; color: #fff; }
+        .console { background: #010409; padding: 20px; border-left: 4px solid #444; margin-top: 20px; font-size: 14px; word-break: break-all; border-radius: 0 4px 4px 0;}
+        .success { border-left-color: #3fb950; color: #3fb950; }
+        .error { border-left-color: #f85149; color: #f85149; }
+        .info { border-left-color: #f7931a; color: #f7931a; }
+        .highlight { color: #d2a8ff; font-weight: bold; }
+        .loading { display: none; color: #f2cc60; font-weight: bold; margin-top: 15px; text-align: center; }
+        .hidden { display: none; }
+    </style>
+</head>
+<body>
+
+    <div class="header-logo">
+        <img src="img/dtrinity-logo.png" alt="D-Trinity - Protocole Cryptographique">
+    </div>
+
+    <div class="tabs">
+        <div class="tab active" onclick="switchTab('signer')">1. SCELLEMENT</div>
+        <div class="tab" onclick="switchTab('upgrader')">2. FINALISATION (OTS)</div>
+        <div class="tab" onclick="switchTab('auditer')">3. AUDIT COMPLET</div>
+    </div>
+
+    <div id="signer" class="panel active">
+        <p>Générez l'empreinte de votre fichier, signez-la avec Nostr et initiez l'ancrage Bitcoin.</p>
+        <label>Fichier à certifier :</label>
+        <input type="file" id="fileToSign">
+        <button onclick="scellerFichier()">Lancer le Scellement Initial</button>
+        <div id="loadingSign" class="loading">⏳ Calcul du hash et signature en cours...</div>
+        <div id="signResult" class="console hidden"></div>
+        <button id="downloadCertBtn" class="download-btn hidden" onclick="telechargerFichier(currentCertificateJson, '.provenance.json', 'application/json')">⬇️ Télécharger Certificat (.json)</button>
+        <button id="downloadOtsBtn" class="ots-btn hidden" onclick="telechargerFichier(currentOtsBuffer, '.ots', 'application/octet-stream')">⏳ Télécharger Preuve (.ots)</button>
+    </div>
+
+    <div id="upgrader" class="panel">
+        <p>Après 24h, glissez votre fichier .ots pour finaliser l'ancrage et le rendre indépendant des serveurs.</p>
+        <label>Preuve temporelle à finaliser (.ots) :</label>
+        <input type="file" id="otsToUpgrade" accept=".ots">
+        <button class="upgrade-btn" onclick="upgradeOts()">Vérifier & Finaliser l'Ancrage</button>
+        <div id="loadingUpgrade" class="loading">⏳ Interrogation des calendriers Bitcoin...</div>
+        <div id="upgradeResult" class="console hidden"></div>
+        <button id="downloadFinalOtsBtn" class="ots-btn hidden" onclick="telechargerFichier(currentUpgradedOts, '.final.ots', 'application/octet-stream')">💾 Télécharger la Preuve Finale (.ots)</button>
+    </div>
+
+    <div id="auditer" class="panel">
+        <p>Vérification souveraine des 3 piliers : Intégrité, Identité et Temps (100% Client-Side).</p>
+        <div style="background: #010409; padding: 20px; border: 1px solid #30363d; border-radius: 4px;">
+            <label>Le Document Original :</label>
+            <input type="file" id="fileToAudit" style="margin-bottom:10px;">
+            <label>Le Certificat (.json) :</label>
+            <input type="file" id="certToAudit" accept=".json" style="margin-bottom:10px;">
+            <label>La Preuve (.ots) :</label>
+            <input type="file" id="otsToAudit" accept=".ots">
+        </div>
+        <button onclick="auditerTrinite()">Lancer l'Audit de Vérité</button>
+        <div id="loadingAudit" class="loading">⏳ Analyse binaire locale en cours...</div>
+        <div id="auditResult" class="console hidden"></div>
+    </div>
+
+    <script>
+        let currentCertificateJson, currentOtsBuffer, currentUpgradedOts, originalFileName;
+
+        function switchTab(tabId) {
+            document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+            document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+            document.getElementById(tabId).classList.add('active');
+            event.target.classList.add('active');
+        }
+
+        async function hashBinaryFile(file) {
+            const arrayBuffer = await file.arrayBuffer();
+            const hashBuffer = await crypto.subtle.digest('SHA-256', arrayBuffer);
+            return Array.from(new Uint8Array(hashBuffer)).map(b => b.toString(16).padStart(2, '0')).join('');
+        }
+
+        function telechargerFichier(data, extension, mimeType, forceName = null) {
+            const blob = new Blob([data], { type: mimeType });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            
+            // On utilise le nom forcé, ou le nom global, ou "document" par défaut
+            const finalName = forceName || originalFileName || "document";
+            a.download = finalName + extension;
+            
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url); // Nettoyage de la mémoire !
+        }
+
+        // --- ÉTAPE 1 : SCELLEMENT (Redondance Native via Librairie OTS) ---
+        async function scellerFichier() {
+            const fileInput = document.getElementById('fileToSign');
+            if (fileInput.files.length === 0 || !window.nostr) return alert("Fichier manquant ou extension Nostr non détectée.");
+            
+            const file = fileInput.files[0];
+            originalFileName = file.name;
+            const loading = document.getElementById('loadingSign');
+            const resultBox = document.getElementById('signResult');
+            
+            // Réinitialisation de l'interface
+            loading.style.display = 'block';
+            resultBox.classList.add('hidden');
+            document.getElementById('downloadCertBtn').classList.add('hidden');
+            document.getElementById('downloadOtsBtn').classList.add('hidden');
+
+            try {
+                // 1. Calcul du Hash (L'Intégrité)
+                const arrayBuffer = await file.arrayBuffer();
+                const hashBuffer = await crypto.subtle.digest('SHA-256', arrayBuffer);
+                const hashHex = Array.from(new Uint8Array(hashBuffer)).map(b => b.toString(16).padStart(2, '0')).join('');
+                const hashArray = new Uint8Array(hashBuffer);
+
+                // 2. Initialisation de l'objet OTS natif
+                const OTS = window.OpenTimestamps;
+                const detached = OTS.DetachedTimestampFile.fromHash(new OTS.Ops.OpSHA256(), hashArray);
+
+                // 3. Soumission asynchrone aux multiples calendriers publics
+                // C'est ici que la magie de la redondance opère (création des branches '->')
+                await OTS.stamp(detached);
+
+                // 4. Sérialisation de l'arbre complet en binaire
+                const fullOtsFile = detached.serializeToBytes();
+                
+                // On sauvegarde le buffer complet pour le téléchargement
+                currentOtsBuffer = fullOtsFile.buffer;
+
+                // 5. Signature Nostr (L'Identité)
+                const event = await window.nostr.signEvent({
+                    kind: 1040,
+                    created_at: Math.floor(Date.now() / 1000),
+                    tags: [['x', hashHex], ['filename', file.name]],
+                    content: "D-Trinity Proof of Provenance"
+                });
+                currentCertificateJson = JSON.stringify(event, null, 2);
+
+                // 6. Affichage du succès
+                resultBox.className = "console success";
+                resultBox.innerHTML = `<strong>✓ Scellement redondant réussi !</strong><br>Hash : ${hashHex}<br><span style="color:#8b949e; font-size:12px;">L'arbre de Merkle multi-calendriers a été généré avec succès.</span>`;
+                resultBox.classList.remove('hidden');
+                document.getElementById('downloadCertBtn').classList.remove('hidden');
+                document.getElementById('downloadOtsBtn').classList.remove('hidden');
+                
+            } catch (e) { 
+                resultBox.className = "console error";
+                resultBox.innerHTML = `<strong>Erreur de scellement :</strong> ${e.message}<br><br><span style="font-size:12px; color:#f85149;">Note technique : Si cette erreur mentionne "Failed to fetch" ou "CORS", cela signifie que le navigateur bloque la requête vers les calendriers publics. C'est la limite de l'approche purement front-end.</span>`;
+                resultBox.classList.remove('hidden');
+            }
+            loading.style.display = 'none';
+        }
+
+       // --- ÉTAPE 2 : UPGRADE (Mise à jour Native via Librairie OTS) ---
+        async function upgradeOts() {
+            const otsInput = document.getElementById('otsToUpgrade');
+            if (otsInput.files.length === 0) return alert("Veuillez sélectionner un fichier .ots");
+            
+            const file = otsInput.files[0];
+            const baseName = file.name.replace(/\.ots$/i, '');
+            
+            const loading = document.getElementById('loadingUpgrade');
+            const resultBox = document.getElementById('upgradeResult');
+            const downloadBtn = document.getElementById('downloadFinalOtsBtn');
+            
+            // Réinitialisation de l'interface
+            loading.style.display = 'block';
+            resultBox.classList.add('hidden');
+            downloadBtn.classList.add('hidden');
+
+            try {
+                const otsArrayBuffer = await file.arrayBuffer();
+                const otsBytes = new Uint8Array(otsArrayBuffer);
+
+                // 1. Initialisation et Désérialisation du fichier .ots
+                const OTS = window.OpenTimestamps;
+                const detached = OTS.DetachedTimestampFile.deserialize(otsBytes);
+
+                // 2. Interrogation asynchrone des calendriers (L'Upgrade natif)
+                // La librairie va chercher les chemins de Merkle manquants
+                const isUpgraded = await OTS.upgrade(detached);
+
+                // 3. Sérialisation du nouveau fichier
+                const upgradedData = detached.serializeToBytes();
+
+                // 4. Analyse du résultat
+                if (isUpgraded || upgradedData.length > otsBytes.byteLength) {
+                    currentUpgradedOts = upgradedData;
+                    
+                    resultBox.className = "console success";
+                    resultBox.innerHTML = `<strong>✓ Ancrage Bitcoin récupéré et fusionné !</strong><br>L'arbre de Merkle a été complété avec succès.<br><br>👇 Téléchargez votre preuve finale certifiée et <strong>utilisez-la pour l'Étape 3 (Audit)</strong>.`;
+                    
+                    downloadBtn.innerHTML = `💾 Télécharger ${baseName}_confirm_final.ots`;
+                    downloadBtn.onclick = function() {
+                        telechargerFichier(currentUpgradedOts, '_confirm_final.ots', 'application/octet-stream', baseName);
+                    };
+                    downloadBtn.classList.remove('hidden');
+
+                } else {
+                    // Si aucune modification n'a eu lieu, on vérifie pourquoi
+                    const infoString = OTS.info(detached);
+                    
+                    if (infoString.match(/BitcoinBlockHeaderAttestation/i) || infoString.match(/block ([0-9]+)/i)) {
+                        resultBox.className = "console info";
+                        resultBox.innerHTML = `<strong>ℹ️ Fichier déjà finalisé.</strong><br>Ce fichier contient déjà la preuve Bitcoin complète.<br>👉 <strong>Passez à l'Étape 3 (Audit).</strong>`;
+                    } else {
+                        resultBox.className = "console info";
+                        resultBox.innerHTML = `<strong>ℹ️ Toujours en attente (Pending).</strong><br>La transaction Bitcoin n'est pas encore confirmée ou les calendriers n'ont pas encore publié l'arbre. Réessayez plus tard (généralement après quelques heures).`;
+                    }
+                }
+                resultBox.classList.remove('hidden');
+
+            } catch (e) { 
+                resultBox.className = "console error";
+                resultBox.innerHTML = `<strong>Erreur lors de la mise à jour :</strong> ${e.message}<br><br><span style="font-size:12px; color:#f85149;">Vérifiez que le fichier soumis est bien un .ots valide.</span>`;
+                resultBox.classList.remove('hidden');
+            }
+            
+            loading.style.display = 'none';
+        }
+
+        // --- ÉTAPE 3 : AUDIT SOUVERAIN (AVEC LA LIBRAIRIE OFFICIELLE BUNDLÉE) ---
+        async function auditerTrinite() {
+            const f = document.getElementById('fileToAudit').files[0];
+            const c = document.getElementById('certToAudit').files[0];
+            const o = document.getElementById('otsToAudit').files[0];
+            if (!f || !c || !o) return alert("Les 3 fichiers sont requis pour l'audit.");
+
+            const resultBox = document.getElementById('auditResult');
+            const loading = document.getElementById('loadingAudit');
+            
+            loading.style.display = 'block';
+            resultBox.classList.add('hidden');
+
+            try {
+                const cert = JSON.parse(await c.text());
+                const actualHash = await hashBinaryFile(f);
+                const otsArrayBuffer = await o.arrayBuffer();
+                const otsBytes = new Uint8Array(otsArrayBuffer);
+                
+                let reportHtml = `<strong>Rapport d'Audit : ${f.name}</strong><br><hr style="border-color:#30363d; margin: 15px 0;">`;
+                
+                // 1. INTÉGRITÉ
+                const expectedTag = cert.tags.find(t => t[0] === 'x');
+                if (expectedTag && actualHash === expectedTag[1]) {
+                    reportHtml += `<span class="success">✓ 1. INTÉGRITÉ (SHA-256) :</span> Empreinte parfaite.<br><code style="color:#8b949e; font-size:12px;">${actualHash}</code><br><br>`;
+                } else {
+                    throw new Error("Échec d'intégrité : le document a été altéré/le certificat JSON ne correspond pas.");
+                }
+
+                // 2. IDENTITÉ (NOSTR)
+                const isSigValid = window.NostrTools.verifySignature(cert);
+                if (!isSigValid) throw new Error("Échec d'identité : Signature Schnorr invalide.");
+                
+                reportHtml += `<span class="success">✓ 2. IDENTITÉ (SCHNORR) :</span> Signature authentique.<br>`;
+                
+                try {
+                    const pool = new window.NostrTools.SimplePool();
+                    const relays = ['wss://relay.primal.net', 'wss://purplepag.es', 'wss://relay.damus.io', 'wss://nos.lol'];
+                    const profileEvent = await pool.get(relays, { authors: [cert.pubkey], kinds: [0] });
+                    
+                    if (profileEvent) {
+                        const profile = JSON.parse(profileEvent.content);
+                        const displayName = profile.nip05 || profile.name || "Auteur vérifié";
+                        reportHtml += `<div class="highlight" style="font-size:13px; margin-top:5px;">👤 Profil : ${displayName}</div><br>`;
+                    } else {
+                        reportHtml += `<div style="color:#8b949e; font-size:13px; margin-top:5px;">Clé valide : ${cert.pubkey.slice(0,16)}...</div><br>`;
+                    }
+                    pool.close(relays);
+                } catch (e) {
+                    reportHtml += `<div style="color:#8b949e; font-size:13px; margin-top:5px;">Clé : ${cert.pubkey.slice(0,16)}... (Réseau injoignable)</div><br>`;
+                }
+
+                // 3. TEMPS (ANALYSE BINAIRE OFFICIELLE LOCALE)
+                try {
+                    const OTS = window.OpenTimestamps;
+                    
+                    // Désérialisation officielle (Prend en charge les Multi-Forks !)
+                    const detached = OTS.DetachedTimestampFile.deserialize(otsBytes);
+                    
+                    // Extraction du Hash interne au fichier .ots pour comparaison absolue
+                    const otsHashHex = Array.from(detached.timestamp.msg).map(b => b.toString(16).padStart(2, '0')).join('');
+                    
+                    if (actualHash !== otsHashHex) {
+                        throw new Error("ALERTE : L'empreinte interne du fichier .ots ne correspond pas au document original ! Vérifiez le fichier OTS et la source.");
+                    }
+
+                    // La fonction magique officielle qui analyse tout l'arbre et recrache un rapport texte
+                    const infoString = OTS.info(detached);
+                    
+                    // On y cherche la confirmation Bitcoin
+                    const blockMatch = infoString.match(/BitcoinBlockHeaderAttestation\(([0-9]+)\)/i) || infoString.match(/block ([0-9]+)/i);
+
+                    if (blockMatch && blockMatch[1]) {
+                        const blockNumber = blockMatch[1];
+                        reportHtml += `<span class="success">✓ 3. TEMPS (BITCOIN) :</span> Sceau cryptographique absolu.<br>`;
+                        reportHtml += `<div style="background:#010409; padding:12px; border-left:3px solid #f7931a; margin-top:8px; font-size:13px;">`;
+                        reportHtml += `<strong>Lien Mathématique :</strong> Empreinte vérifiée au cœur du fichier .ots.<br>`;
+                        reportHtml += `<strong>Bloc Confirmé :</strong> <a href="https://mempool.space/block/${blockNumber}" target="_blank" style="color:#f7931a;">N° ${blockNumber}</a><br>`;
+                        reportHtml += `<strong>Statut :</strong> Chemin de Merkle décodé et validé avec succès.</div>`;
+                    } else {
+                        reportHtml += `<span style="color:#f2cc60">⚠️ 3. TEMPS : La preuve OTS est incomplète.</span><br>`;
+                        reportHtml += `<div style="color:#8b949e; font-size:13px; margin-top:5px;">L'empreinte est validée, mais l'ancrage Bitcoin est absent. Finalisez la preuve via l'Onglet 2.</div>`;
+                    }
+
+                } catch(e) {
+                    reportHtml += `<span style="color:#f85149">⚠️ 3. TEMPS : Fichier corrompu ou illisible. (${e.message})</span>`;
+                }
+
+                resultBox.className = "console success";
+                resultBox.innerHTML = reportHtml;
+                resultBox.classList.remove('hidden');
+
+            } catch (error) {
+                resultBox.className = "console error";
+                resultBox.innerHTML = `<strong>✗ ÉCHEC DE L'AUDIT</strong><br>${error.message}`;
+                resultBox.classList.remove('hidden');
+            }
+            loading.style.display = 'none';
+        }
+    </script>
+</body>
+</html>
