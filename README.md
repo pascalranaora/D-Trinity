@@ -1,8 +1,6 @@
 # 🛡️ Trinity : La Trinité Décentralisée
 
 *Authors: [Pascal Ranaora] — Open Source under CC-BY-SA 4.0*
-![D-Trinity](https://github.com/pascalranaora/D-Trinity/blob/main/img/dtrinity-logo.png)
-
 
 https://github.com/user-attachments/assets/39ceb92b-8bbc-44ef-ad27-9601bc21f942
 
