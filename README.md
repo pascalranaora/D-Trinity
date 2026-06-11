@@ -1,13 +1,10 @@
+# 🛡️ Trinity : La Trinité Décentralisée
+
+*Authors: [Pascal Ranaora] — Open Source under CC-BY-SA 4.0*
 ![D-Trinity](https://github.com/pascalranaora/D-Trinity/blob/main/img/dtrinity-logo.png)
 
 
 https://github.com/user-attachments/assets/39ceb92b-8bbc-44ef-ad27-9601bc21f942
-
-
-# 🛡️ Trinity : La Trinité Décentralisée
-
-*Authors: [Pascal Ranaora] — Open Source under CC-BY-SA 4.0*
-
 
 Bienvenue sur **D-Trinity**. Ce portail souverain permet de sceller l'information dans l'éternité numérique. Il combine trois forces décentralisées pour créer une preuve de vérité universelle.
 
