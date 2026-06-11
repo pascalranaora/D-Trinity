@@ -9,7 +9,7 @@ Bienvenue sur **D-Trinity**. Ce portail souverain permet de sceller l'informatio
 **Zéro serveur central. Zéro tiers de confiance. 100% Client-Side. La vérité par les mathématiques.**
 
 
-Accès à l'outil : https://pascalranaora.github.io/D-Trinity/dtrinity.html
+Accès à l'outil : https://pascalranaora.github.io/Trinity
 ---
 
 ## 💡 Le Concept : La Trinité de la Confiance
