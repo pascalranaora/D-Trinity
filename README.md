@@ -4,7 +4,7 @@
 https://github.com/user-attachments/assets/39ceb92b-8bbc-44ef-ad27-9601bc21f942
 
 
-# 🛡️ D-Trinity : La Trinité Décentralisée
+# 🛡️ Trinity : La Trinité Décentralisée
 
 *Authors: [Pascal Ranaora] — Open Source under CC-BY-SA 4.0*
 
