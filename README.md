@@ -137,8 +137,6 @@ Vous avez reçu un fichier et vous souhaitez vérifier de manière absolue qui e
 
 # 🛡️ Trinity: The Decentralized Trinity
 
-https://github.com/user-attachments/assets/39ceb92b-8bbc-44ef-ad27-9601bc21f942
-
 Welcome to **Trinity**. This sovereign portal allows you to seal information into digital eternity. It combines three decentralized forces to create a universal proof of truth.
 
 **Zero central servers. Zero trusted third parties. 100% Client-Side. Truth through mathematics.**
