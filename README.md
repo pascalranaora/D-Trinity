@@ -20,13 +20,13 @@ Trinity repose sur trois piliers cryptographiques infaillibles :
 2. **Le Qui (Identité) :** Le protocole `Nostr`. 
 3. **Le Quand (Temps) :** Le protocole `OpenTimestamps` ancré sur `Bitcoin`.
 
-![La Trinité de la Confiance](https://github.com/pascalranaora/Trinity/blob/main/img/trinity.png)
+![La Trinité de la Confiance](https://github.com/pascalranaora/D-Trinity/blob/main/img/trinity.png)
 
 ---
 
 ## 🟣 1. L'Identité avec Nostr : Qu'est-ce que Nostr et comment créer son identité ?
 
-![Nostr - L'identité numérique souveraine](https://github.com/pascalranaora/Trinity/blob/main/img/nostrillustration.png)
+![Nostr - L'identité numérique souveraine](https://github.com/pascalranaora/D-Trinity/blob/main/img/nostrillustration.png)
 
 Si vous n'avez jamais entendu parler de Nostr ou de cryptographie, pas de panique. C'est beaucoup plus simple qu'il n'y paraît.
 
@@ -56,7 +56,7 @@ Pour utiliser notre portail de scellement en toute sécurité, vous ne devez jam
 
 ## 🧡 2. Le Temps avec OpenTimestamps (OTS)
 
-![L'Ancrage Bitcoin](https://github.com/pascalranaora/Trinity/blob/main/img/antiautodafe.png)
+![L'Ancrage Bitcoin](https://github.com/pascalranaora/D-Trinity/blob/main/img/antiautodafe.png)
 
 Si Nostr prouve **Qui** a signé, OpenTimestamps prouve **Quand** le document existait. 
 
@@ -132,7 +132,7 @@ Vous avez reçu un fichier et vous souhaitez vérifier de manière absolue qui e
    * Si les 3 piliers sont au vert ✅, le document est pur, la signature est authentique (le profil de l'auteur s'affiche), et l'ancrage Bitcoin est validé localement.
    * Si une ligne est au rouge ❌, le document a été falsifié, usurpé, ou la preuve est incomplète.
 
-![Signature](https://github.com/pascalranaora/Trinity/blob/main/img/schnorrsig.png)
+![Signature](https://github.com/pascalranaora/D-Trinity/blob/main/img/schnorrsig.png)
 
 
 # 🛡️ Trinity: The Decentralized Trinity
@@ -154,13 +154,13 @@ Trinity relies on three infallible cryptographic pillars:
 2. **The Who (Identity):** The `Nostr` protocol. 
 3. **The When (Time):** The `OpenTimestamps` protocol anchored to `Bitcoin`.
 
-![The Trinity of Trust](https://github.com/pascalranaora/Trinity/blob/main/img/trinity.png)
+![The Trinity of Trust](https://github.com/pascalranaora/D-Trinity/blob/main/img/trinity.png)
 
 ---
 
 ## 🟣 1. Identity with Nostr: What is Nostr and how to create your identity?
 
-![Nostr - Sovereign Digital Identity](https://github.com/pascalranaora/Trinity/blob/main/img/nostrillustration.png)
+![Nostr - Sovereign Digital Identity](https://github.com/pascalranaora/D-Trinity/blob/main/img/nostrillustration.png)
 
 If you have never heard of Nostr or cryptography, don't panic. It is much simpler than it looks.
 
@@ -190,7 +190,7 @@ To use our sealing portal securely, you should never type your private key into 
 
 ## 🧡 2. Time with OpenTimestamps (OTS)
 
-![The Bitcoin Anchor](https://github.com/pascalranaora/Trinity/blob/main/img/antiautodafe.png)
+![The Bitcoin Anchor](https://github.com/pascalranaora/D-Trinity/blob/main/img/antiautodafe.png)
 
 If Nostr proves **Who** signed it, OpenTimestamps proves **When** the document existed. 
 
@@ -267,4 +267,4 @@ Have you received a file and want to verify with absolute certainty who wrote it
    * If all 3 pillars are green ✅, the document is untampered, the signature is authentic (the author's profile will be displayed), and the Bitcoin anchoring is validated locally.
    * If any line is red ❌, the document has been altered, impersonated, or the proof is incomplete.
 
-![Signature](https://github.com/pascalranaora/Trinity/blob/main/img/schnorrsig.png)
+![Signature](https://github.com/pascalranaora/D-Trinity/blob/main/img/schnorrsig.png)
