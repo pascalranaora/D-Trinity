@@ -77,7 +77,7 @@ Pour prouver qu'un document existait à une date précise, on pourrait demander 
 
 
 ### 💻 Utilisation en Local (Self-Hosting)
-Si vous téléchargez le code source pour utiliser l'outil hors de la version web hébergée, un simple double-clic sur le fichier `dtrinity.html` bloquera l'extension Nostr (sécurité liée aux fichiers `file:///`).
+Si vous téléchargez le code source pour utiliser l'outil hors de la version web hébergée, un simple double-clic sur le fichier `index.html` bloquera l'extension Nostr (sécurité liée aux fichiers `file:///`).
 
 Pour l'utiliser en local, vous devez servir la page via un mini-serveur HTTP :
 1. Ouvrez un terminal dans le dossier du projet.
@@ -208,7 +208,7 @@ To prove a document existed at a specific date, you could ask a notary or a web 
 **Note:** Sealing on Bitcoin is not instantaneous. You have to wait for a "block" to be mined (ranging from 10 minutes to a few hours depending on network congestion). Your proof becomes "absolute" once confirmed by the network.
 
 ### 💻 Local Use (Self-Hosting)
-If you download the source code to use the tool outside of the hosted web version, simply double-clicking the `dtrinity.html` file will block the Nostr extension (a security restriction related to browser `file:///` protocols).
+If you download the source code to use the tool outside of the hosted web version, simply double-clicking the `index.html` file will block the Nostr extension (a security restriction related to browser `file:///` protocols).
 
 To use it locally, you must serve the page via a local HTTP server:
 1. Open a terminal in the project folder.
@@ -216,7 +216,7 @@ To use it locally, you must serve the page via a local HTTP server:
    ```bash
    python -m http.server 8000
    ```
-3. Open your browser and navigate to: http://localhost:8000/dtrinity.html
+3. Open your browser and navigate to: http://localhost:8000/index.html
 
 ---
 
