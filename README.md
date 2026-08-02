@@ -84,7 +84,7 @@ Pour l'utiliser en local, vous devez servir la page via un mini-serveur HTTP :
 2. Lancez la commande suivante (Python requis) :
    ```bash
    python -m http.server 8000
-3. Ouvrez votre navigateur et accédez à : http://localhost:8000/dtrinity.html
+3. Ouvrez votre navigateur et accédez à : http://localhost:8000/index.html
 ---
 
 ## 🛠️ Prérequis pour l'utilisation
